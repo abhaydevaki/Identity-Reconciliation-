@@ -3,13 +3,24 @@ from sqlalchemy import select
 from models import db, init_db, Contact
 from config import Config
 from flask_cors import CORS
+from flask_migrate import Migrate
+import logging
 
 app = Flask(__name__)
 CORS(app)
 app.config.from_object(Config)
 
 init_db(app)
+migrate = Migrate(app, db)
 
+# # Setup console logging
+if not app.debug:
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.INFO)
+    app.logger.addHandler(stream_handler)
+
+app.logger.setLevel(logging.INFO)
+app.logger.info("Flask App startup")
 
 @app.route('/identify', methods=['POST'])
 def identify():
